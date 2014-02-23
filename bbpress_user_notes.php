@@ -44,6 +44,9 @@ class bbPress_User_Notes {
 		register_activation_hook( __FILE__, array( &$this, 'activate' ) );
 		register_deactivation_hook( __FILE__, array( &$this, 'deactivate' ) );
 
+		//Load our core functions file right away.
+		require_once( BBPUSER_NOTES_PATH . 'includes/functions.php' );
+
 		add_action( 'admin_init', array( $this, 'admin' ) );
 		add_action( 'init', array( $this, 'front' ) );
 	}
