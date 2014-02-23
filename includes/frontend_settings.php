@@ -62,3 +62,35 @@ function bbpun_handle_user_note_update() {
 }
 add_action( 'wp_ajax_bbpun-update-user-notes', 'bbpun_handle_user_note_update' );
 add_action( 'wp_ajax_nopriv_bbpun-update-user-notes', 'bbpun_handle_user_note_update' );
+
+function bbpun_bbpress_edit_profile() {
+	if ( !current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	?>
+	<div>
+		<label for="bbp_user_notes"><?php _e( 'User Notes', 'bbpuser_notes' ); ?></label>
+		<textarea name="bbp_user_notes" id="bbp_user_notes" rows="5" cols="30" tabindex="<?php bbp_tab_index(); ?>"><?php bbp_displayed_user_field( 'bbp_user_notes', 'edit' ); ?></textarea>
+	</div>
+<?php
+}
+add_action( 'bbp_user_edit_after_about', 'bbpun_bbpress_edit_profile' );
+
+function bbpun_bbpress_edit_profile_handler() {
+
+	if ( !current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
+	$original = get_user_meta( $_POST['user_id'], 'bbp_user_notes', true );
+
+	//Unedited
+	if ( $_POST['bbp_user_notes'] == $original ) {
+		return;
+	}
+
+	$new = sanitize_text_field( $_POST['bbp_user_notes'] );
+
+	update_user_meta( $_POST['user_id'], 'bbp_user_notes', $new );
+}
+add_action( 'bbp_post_request_bbp-update-user', 'bbpun_bbpress_edit_profile_handler', 1 );
